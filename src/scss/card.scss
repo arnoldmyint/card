@@ -11,6 +11,7 @@
 @import "cards/mastercard";
 @import "cards/maestro";
 @import "cards/dankort";
+@import "cards/elo";
 
 .jp-card-container {
     @include perspective(1000px);
@@ -41,6 +42,7 @@
 
     &.jp-card-flipped {
         @include transform(rotateY(180deg));
+        @include backface-visibility(hidden);
     }
 
     .jp-card-front, .jp-card-back {

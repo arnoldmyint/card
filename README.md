@@ -8,10 +8,11 @@ Card will take *any* credit card form and make it the best part of the checkout 
 
 ## Usage (without jQuery)
 
-To use, you'll need to include the Card JavaScript files into your HTML. You can find the necessary file at `/lib/js/card.js` and include it in your HTML like so.
+To use, you'll need to include the Card JavaScript files into your HTML, no CSS link is necessary as the JavaScript file does this for you. You can find the necessary file at `/dist/card.js` and include it in your HTML like so.
 
 ```html
 <!-- at the end of BODY -->
+<!-- CSS is included via this JavaScript file -->
 <script src="/path/to/card.js"></script>
 ```
 
@@ -50,10 +51,20 @@ var card = new Card({
         cvc: '•••'
     },
 
+    masks: {
+        cardNumber: '•' // optional - mask card number
+    }
+
     // if true, will log helpful messages for setting up Card
     debug: false // optional - default false
 });
 ```
+### Installing card from bower
+
+If you're using bower, you can install card.js with:
+
+    bower install card --save
+
 ### Installing card from npm
 
 If you're using npm, you can install card.js with:
@@ -73,6 +84,7 @@ Card can be used in forms where you have multiple inputs that render to a single
 <html>
 <body>
 <div class='card-wrapper'></div>
+<!-- CSS is included via this JavaScript file -->
 <script src="/path/to/card.js"></script>
 <form>
     <input type="text" name="number">
@@ -103,6 +115,7 @@ Card renders with default placeholders for card `name`, `number`, `expiry`, and 
 <html>
 <body>
 <div class='card-wrapper'></div>
+<!-- CSS is included via this JavaScript file -->
 <script src="/path/to/card.js"></script>
 <form>
     <input type="text" name="number">
@@ -136,6 +149,7 @@ To render the card with the strings in a different language, you can pass in a `
 <html>
 <body>
 <div class='card-wrapper'></div>
+<!-- CSS is included via this JavaScript file -->
 <script src="/path/to/card.js"></script>
 <form>
     <input type="text" name="number">
@@ -161,10 +175,11 @@ var card = new Card({
 
 ## Using with jQuery
 
-To use with jQuery, you'll need to include the `jquery.card.js` file into your HTML. You can find the necessary file at `/lib/js/jquery.card.js` and include it in your HTML like so.
+To use with jQuery, you'll need to include the `jquery.card.js` file into your HTML. You can find the necessary file at `/dist/jquery.card.js` and include it in your HTML like so.
 
 ```html
 <!-- at the end of BODY -->
+<!-- CSS is included via this JavaScript file -->
 <script src="/path/to/jquery.card.js"></script>
 ```
 
@@ -183,8 +198,8 @@ $('form').card({
 ## Using with other javascript libraries
 
 Card has wrappers that make it easy to use with other javascript libraries:
- 
-### Angular
+
+### Angular (1.x Currently)
 
 * [angular-card](https://github.com/gavruk/angular-card)
 
@@ -206,7 +221,7 @@ $ git clone --recursive https://github.com/jessepollak/card.git
 $ cd card
 $ git submodule init && git submodule update
 $ npm install
-$ npm start
+$ npm development
 ```
 
 Now, if you go to localhost:8080/example in your browser, you should see the demo page.
@@ -224,8 +239,14 @@ Card is used in the wild in these places:
 * [GigSalad](https://www.gigsalad.com)
 * [Boligninja](http://www.boligninja.dk)
 * [EasyCarros](http://www.easycarros.com/)
-* [Sintelle] (http://www.sintelle.fr/)
+* [Sintelle] (http://www.sintelleparapharmacie.com/)
 * [Wevorce](http://wevorce.com/)
+* [PayumServer](https://github.com/Payum/PayumServer)
+* [Paribus](https://paribus.co)
+* [Bizzabo](https://www.bizzabo.com)
+* [Tortuba](https://www.tortuba.com)
+* [Netlify](https://www.netlify.com)
+* [The Spice House](https://www.thespicehouse.com/)
 
 Are you using Card in production? If so, we'd love to link to you from this page. Open a PR or drop [@jessepollak](http://twitter.com/jessepollak) a line on [Twitter](http://twitter.com/jessepollak) and we'll add you right away!
 

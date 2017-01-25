@@ -1,14 +1,20 @@
 require '../scss/card.scss'
 
 QJ = require 'qj'
-payment = require './payment/src/payment.coffee'
+payment = require 'payment'
 extend = require 'node.extend'
 
 class Card
+  initializedDataAttr: "data-jp-card-initialized"
   cardTemplate: '' +
   '<div class="jp-card-container">' +
       '<div class="jp-card">' +
           '<div class="jp-card-front">' +
+              '<div class="jp-card-logo jp-card-elo">' +
+                '<div class="e">e</div>' +
+                '<div class="l">l</div>' +
+                '<div class="o">o</div>' +
+              '</div>' +
               '<div class="jp-card-logo jp-card-visa">visa</div>' +
               '<div class="jp-card-logo jp-card-mastercard">MasterCard</div>' +
               '<div class="jp-card-logo jp-card-maestro">Maestro</div>' +
@@ -44,7 +50,8 @@ class Card
     'jp-card-mastercard',
     'jp-card-unionpay',
     'jp-card-visa',
-    'jp-card-visaelectron'
+    'jp-card-visaelectron',
+    'jp-card-elo'
   ]
   defaults:
     formatting: true
@@ -68,6 +75,8 @@ class Card
       cvc: '&bull;&bull;&bull;'
       expiry: '&bull;&bull;/&bull;&bull;'
       name: 'Full Name'
+    masks:
+      cardNumber: false
     classes:
       valid: 'jp-card-valid'
       invalid: 'jp-card-invalid'
@@ -87,6 +96,12 @@ class Card
       return
 
     @$container = QJ(@options.container)
+
+    # set a data attribute to ensure that card is only ever initialized
+    # once on a given container
+    toInitialize = if QJ.isDOMElement(@$container) then @$container else @$container[0]
+    return if toInitialize.getAttribute(@initializedDataAttr)
+    toInitialize.setAttribute(@initializedDataAttr, true)
 
     @render()
     @attachHandlers()
@@ -111,14 +126,11 @@ class Card
     if @options.formatting
       Payment.formatCardNumber(@$numberInput)
       Payment.formatCardCVC(@$cvcInput)
-
-      # we can only format if there's only one expiry input
-      if @$expiryInput.length == 1
-        Payment.formatCardExpiry(@$expiryInput)
+      Payment.formatCardExpiry(@$expiryInput)
 
     if @options.width
       $cardContainer = QJ(@options.cardSelectors.cardContainer)[0]
-      baseWidth      = parseInt($cardContainer.clientWidth)
+      baseWidth = parseInt($cardContainer.clientWidth || window.getComputedStyle($cardContainer).width)
 
       $cardContainer.style.transform = "scale(#{@options.width / baseWidth})"
 
@@ -134,14 +146,16 @@ class Card
       QJ.addClass @$card, 'jp-card-ie-11'
 
   attachHandlers: ->
+    numberInputFilters = [@validToggler('cardNumber')]
+    numberInputFilters.push(@maskCardNumber) if @options.masks.cardNumber
+
     bindVal @$numberInput, @$numberDisplay,
       fill: false,
-      filters: @validToggler('cardNumber')
+      filters: numberInputFilters
     QJ.on @$numberInput, 'payment.cardType', @handle('setCardType')
 
     expiryFilters = [(val) -> val.replace /(\s+)/g, '']
-    if @$expiryInput.length == 1
-      expiryFilters.push @validToggler('cardExpiry')
+    expiryFilters.push @validToggler('cardExpiry')
 
     bindVal @$expiryInput, @$expiryDisplay,
         join: (text) ->
@@ -192,7 +206,19 @@ class Card
       val
   toggleValidClass: (el, test) ->
     QJ.toggleClass el, @options.classes.valid, test
-    QJ.toggleClass el ,@options.classes.invalid, !test
+    QJ.toggleClass el, @options.classes.invalid, !test
+
+  maskCardNumber: (val, el, out) =>
+    mask = @options.masks.cardNumber
+    numbers = val.split(' ')
+
+    if numbers.length >= 3
+      numbers.forEach (item, idx) ->
+        numbers[idx] = numbers[idx].replace(/\d/g, mask) unless idx == numbers.length - 1
+      numbers.join(' ')
+
+    else
+      val.replace /\d/g, mask
 
   handlers:
     setCardType: ($el, e) ->
